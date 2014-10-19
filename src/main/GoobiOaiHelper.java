@@ -28,7 +28,17 @@ public class GoobiOaiHelper {
 		this.oaiPmh = oaiPmh;
 	}
 
-	
+	/**
+	 * Gets information of structure elements (e. g. "Article", "Chapter", etc.) from an OAI-PMH interface. The document must be a METS-XML. An identifier of an individual record
+	 * that is available over the OAI interface must be submitted. Example: http://example.com/oai/?verb=GetRecord&metadataPrefix=oai_dc&identifier=USE_THIS_ID
+	 * Returns a list with "StructureElement" objects. You could iterate over the list to get title, subtitle, authors, etc. of the structure element.
+	 * If an information is not found, you will get "null".
+	 * 
+	 * @param id					a String of the identifier of an individual record that is available over the OAI interface
+	 * @param structureElements		a List<String> of stucture elements to parse, e. g. "Article", "Chapter", etc. Use "null" to parse all structure elements
+	 * @return						a List<StructureElement>
+	 * @throws Exception
+	 */
 	public List<StructureElement> getStructureElements(String id, List<String> structureElements) throws Exception {
 		Document document = new Network().getMetsXmlRecord(oaiPmh, id);
 		List<StructureElement> lstStructureElements = new ArrayList<StructureElement>();
@@ -63,6 +73,14 @@ public class GoobiOaiHelper {
 	}
 
 
+	/**
+	 * Get all relevent identifiers of the METS-XML document for further usage. Returns a List<Id>.
+	 * 
+	 * @param document				a Document object (METS-XML)
+	 * @param structureElements		a List<String> of stucture elements to parse, e. g. "Article", "Chapter", etc. Use "null" to parse all structure elements
+	 * @return						a List<Id>
+	 * @throws Exception
+	 */
 	public List<Id> getIds(Document document, List<String> structureElements) throws Exception {
 
 		List<Id> ids = new ArrayList<Id>();
@@ -97,7 +115,14 @@ public class GoobiOaiHelper {
 		return ids;
 	}
 
-
+	/**
+	 * Gets the identifiers of the physical structure map (see element <mets:structMap TYPE="PHYSICAL">) of the METS-XML.
+	 * 
+	 * @param document		a Document object (METS-XML)
+	 * @param logId			a List<String> of the itentifiers of the logical structure map (see element <mets:structMap TYPE="LOGICAL">) of the METS-XML
+	 * @return				a List<String> with the identifiers of the physical structure map
+	 * @throws Exception
+	 */
 	protected List<String> getPhysIds(Document document, String logId) throws Exception {	
 		List<String> physIds = new ArrayList<String>();
 		physIds = xmlParser.getAttributeValues(document, "OAI-PMH/GetRecord/record/metadata/mets/structLink//smLink[@from='" + logId + "']", "xlink:to");
@@ -105,6 +130,15 @@ public class GoobiOaiHelper {
 	}
 
 	
+	/**
+	 * Gets a String with the page label for a structure element. E. g. if the first page of a structure element named "Article" starts at page no. 23 and ends at page no. 42, the
+	 * returned String would be "23-42". If the "Article" would be only on page no. 23, the returned String would be "23".
+	 * 
+	 * @param document						a Document object (METS-XML)
+	 * @param physIds						a List<String> with the identifiers of the physical structure map (see element <mets:structMap TYPE="PHYSICAL">) of the METS-XML.
+	 * @return								a String with the page labels
+	 * @throws XPathExpressionException
+	 */
 	protected String getPageLabelByPhysId(Document document, List<String> physIds) throws XPathExpressionException {
 		String pageLabel = null;
 
@@ -125,6 +159,11 @@ public class GoobiOaiHelper {
 	}
 
 
+	/**
+	 * Gets the URL to the OAI-PMH interface as a String.
+	 * 
+	 * @return a String with the OAI-PMH URL
+	 */
 	public String getOaiPmh() {
 		return oaiPmh;
 	}
