@@ -21,7 +21,6 @@ import classes.StructureElement;
 
 public class GoobiOaiHelper {
 
-
 	private String oaiPmh;
 	private XmlParser xmlParser = new XmlParser();
 
