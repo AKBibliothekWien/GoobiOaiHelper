@@ -1,3 +1,19 @@
+/**
+ * This file is part of GoobiOaiHelper.
+ * 
+ * GoobiOaiHelper is free software: you can redistribute it and/or modify
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * GoobiOaiHelper is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with GoobiOaiHelper.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package parsers;
 
 import java.util.ArrayList;
@@ -13,6 +29,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+/**
+ * This class provides methods to parse a METS-XML document.
+ * 
+ * @author Michael Birkner
+ */
 public class XmlParser {
 
 	XPath xPath = XPathFactory.newInstance().newXPath();

@@ -1,3 +1,19 @@
+/**
+ * This file is part of GoobiOaiHelper.
+ * 
+ * GoobiOaiHelper is free software: you can redistribute it and/or modify
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * GoobiOaiHelper is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with GoobiOaiHelper.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package main;
 
 import java.util.ArrayList;
@@ -19,6 +35,11 @@ import parsers.XmlParser;
 import classes.Id;
 import classes.StructureElement;
 
+/**
+ * This class provides methods to receive some information from an OAI-PMH interface. Provide a URL to such an interface with an ending slash. Example: "http://example.com/viewer/oai/"
+ * 
+ * @author Michael Birkner
+ */
 public class GoobiOaiHelper {
 
 	private String oaiPmh;
