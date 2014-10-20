@@ -25,14 +25,11 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import betullam.goobi.oaihelper.classes.Id;
-import betullam.goobi.oaihelper.classes.StructureElement;
-import betullam.goobi.oaihelper.network.Network;
 import betullam.goobi.oaihelper.parsers.XmlParser;
 
 
@@ -41,57 +38,13 @@ import betullam.goobi.oaihelper.parsers.XmlParser;
  * 
  * @author Michael Birkner
  */
-public class GoobiOaiHelper {
+public class GoobiOaiHelper extends XmlParser {
 
 	private String oaiPmh;
 	private XmlParser xmlParser = new XmlParser();
 
 	public GoobiOaiHelper(String oaiPmh) {
 		this.oaiPmh = oaiPmh;
-	}
-
-	/**
-	 * Gets information of structure elements (e. g. "Article", "Chapter", etc.) from an OAI-PMH interface. The document must be a METS-XML. An identifier of an individual record
-	 * that is available over the OAI interface must be submitted. Example: http://example.com/oai/?verb=GetRecord&metadataPrefix=oai_dc&identifier=USE_THIS_ID
-	 * Returns a list with "StructureElement" objects. You could iterate over the list to get title, subtitle, authors, etc. of the structure element.
-	 * If an information is not found, you will get "null".
-	 * 
-	 * @param id					a String of the identifier of an individual record that is available over the OAI interface
-	 * @param structureElements		a List<String> of stucture elements to parse, e. g. "Article", "Chapter", etc. Use "null" to parse all structure elements
-	 * @return						a List<StructureElement>
-	 * @throws Exception
-	 */
-	public List<StructureElement> getStructureElements(String id, List<String> structureElements) throws Exception {
-		Document document = new Network().getMetsXmlRecord(oaiPmh, id);
-		List<StructureElement> lstStructureElements = new ArrayList<StructureElement>();
-		List<Id> ids = getIds(document, structureElements);
-
-		for(Id metsIds : ids) {
-			String logId = metsIds.getLogId();
-			String dmdlogId = metsIds.getDmdlogId();
-
-			String structureElementType = xmlParser.getAttributeValue(document, "OAI-PMH/GetRecord/record/metadata/mets/structMap[@TYPE=\"LOGICAL\"]//div[@ID='" + logId + "']", "TYPE");
-			String title = xmlParser.getTextValue(document, "OAI-PMH/GetRecord/record/metadata/mets/dmdSec[@ID='" + dmdlogId + "']/mdWrap/xmlData/mods/titleInfo/title");
-			String subTitle = xmlParser.getTextValue(document, "OAI-PMH/GetRecord/record/metadata/mets/dmdSec[@ID='" + dmdlogId + "']/mdWrap/xmlData/mods/titleInfo/subTitle");
-			List<String> authors = xmlParser.getTextValues(document, "OAI-PMH/GetRecord/record/metadata/mets/dmdSec[@ID='" + dmdlogId + "']/mdWrap/xmlData/mods/name/displayForm");
-			String artAbstract = xmlParser.getTextValue(document, "OAI-PMH/GetRecord/record/metadata/mets/dmdSec[@ID='" + dmdlogId + "']/mdWrap/xmlData/mods/abstract");
-			String language = xmlParser.getTextValue(document, "OAI-PMH/GetRecord/record/metadata/mets/dmdSec[@ID='" + dmdlogId + "']/mdWrap/xmlData/mods/language/languageTerm");
-			String pageLabel = getPageLabelByPhysId(document, metsIds.getPhysIds());
-
-			System.out.println("Ids: " + metsIds.toString());
-			System.out.println("Type: " + structureElementType);
-			System.out.println("Authors: " + authors);
-			System.out.println("Title: " + title);
-			System.out.println("Subtitle: " + subTitle);
-			System.out.println("Abstract: " + artAbstract);
-			System.out.println("Language: " + language);
-			System.out.println("Pages: " + pageLabel);
-			System.out.print("\n");
-			
-			lstStructureElements.add(new StructureElement(metsIds, structureElementType, title, subTitle, authors, artAbstract, language, pageLabel));
-		}
-
-		return lstStructureElements;
 	}
 
 
@@ -145,7 +98,7 @@ public class GoobiOaiHelper {
 	 * @return				a List<String> with the identifiers of the physical structure map
 	 * @throws Exception
 	 */
-	protected List<String> getPhysIds(Document document, String logId) throws Exception {	
+	public List<String> getPhysIds(Document document, String logId) throws Exception {	
 		List<String> physIds = new ArrayList<String>();
 		physIds = xmlParser.getAttributeValues(document, "OAI-PMH/GetRecord/record/metadata/mets/structLink//smLink[@from='" + logId + "']", "xlink:to");
 		return physIds;
@@ -161,7 +114,7 @@ public class GoobiOaiHelper {
 	 * @return								a String with the page labels
 	 * @throws XPathExpressionException
 	 */
-	protected String getPageLabelByPhysId(Document document, List<String> physIds) throws XPathExpressionException {
+	public String getPageLabelByPhysId(Document document, List<String> physIds) throws XPathExpressionException {
 		String pageLabel = null;
 
 		// Prevent NullPointerException. If there are no physIds, just return null
