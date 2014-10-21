@@ -47,7 +47,6 @@ public class GoobiOaiHelper extends XmlParser {
 		this.oaiPmh = oaiPmh;
 	}
 
-
 	/**
 	 * Get all relevent identifiers of the METS-XML document for further usage. Returns a List<Id>.
 	 * 
@@ -110,7 +109,7 @@ public class GoobiOaiHelper extends XmlParser {
 	 * returned String would be "23-42". If the "Article" would be only on page no. 23, the returned String would be "23".
 	 * 
 	 * @param document						a Document object (METS-XML)
-	 * @param physIds						a List<String> with the identifiers of the physical structure map (see element <mets:structMap TYPE="PHYSICAL">) of the METS-XML.
+	 * @param physIds						a List<String> with the identifiers of the physical structure map (see element <mets:structMap TYPE="PHYSICAL">) of the METS-XML
 	 * @return								a String with the page labels
 	 * @throws XPathExpressionException
 	 */
@@ -125,15 +124,41 @@ public class GoobiOaiHelper extends XmlParser {
 			String lastPage = xmlParser.getAttributeValue(document, "OAI-PMH/GetRecord/record/metadata/mets/structMap[@TYPE=\"PHYSICAL\"]//div[@ID='" + lastPhysId + "']", "ORDERLABEL");
 
 			if (firstPage.equals(lastPage)) {
-				pageLabel = firstPage;
+				pageLabel = firstPage.trim();
 			} else {
-				pageLabel = firstPage + "-" + lastPage;
+				pageLabel = firstPage.trim() + "-" + lastPage.trim();
 			}
 		}
 		return pageLabel;
 	}
+	
+	
+	
+	/**
+	 * Gets a List<String> which contains the 8-digit image numbers that orders a structure element. You could use these numbers to get the image files for a structure element.
+	 * @param document						a Document object (METS-XML)
+	 * @param physIds						a List<String> with the identifiers of the physical structure map (see element <mets:structMap TYPE="PHYSICAL">) of the METS-XML
+	 * @return								a List<String> conaining the 8-digit image numbers that orders a structure element
+	 * @throws XPathExpressionException
+	 */
+	public List<String> getOrderNoByPhysId(Document document, List<String> physIds) throws XPathExpressionException {
+		List<String> images = new ArrayList<String>();
+		
+		for (String physId : physIds) {
+			String imageNo = xmlParser.getAttributeValue(document, "OAI-PMH/GetRecord/record/metadata/mets/structMap[@TYPE=\"PHYSICAL\"]//div[@ID='" + physId + "']", "ORDER");
 
+			int intImageNo = Integer.parseInt(imageNo); // Convert to int to be able to add leading zeros and make it 8 digits long
+			imageNo = String.format("%08d", intImageNo); // Image-number-string with leading zeros by using String.format
 
+			images.add(imageNo);
+		}
+		
+		return images;
+	}
+
+	
+	
+	
 	/**
 	 * Gets the URL to the OAI-PMH interface as a String.
 	 * 
