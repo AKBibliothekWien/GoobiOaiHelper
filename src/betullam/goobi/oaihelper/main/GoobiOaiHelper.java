@@ -133,6 +133,34 @@ public class GoobiOaiHelper extends XmlParser {
 	}
 	
 	
+	/**
+	 * Gets a List<String> with separated fist page label and last page label for a structure element. E. g. if the first page of a structure element named "Article" starts at page no. 23 and ends at page no. 42, the
+	 * returned List<String> would be List<23,42>. If the "Article" would be only on page no. 23, the returned List<String> would be List<23,23>.
+	 * 
+	 * @param document						a Document object (METS-XML)
+	 * @param physIds						a List<String> with the identifiers of the physical structure map (see element <mets:structMap TYPE="PHYSICAL">) of the METS-XML
+	 * @return								a List<String>, where the first element ist the first page, the second element is the second page
+	 * @throws XPathExpressionException
+	 */
+	public List<String> getFirstLastLabelByPhysId(Document document, List<String> physIds) throws XPathExpressionException {
+		List<String> lstPageLabels = new ArrayList<String>();
+		String firstPage = null;
+		String lastPage = null;
+
+		if (physIds != null) {
+			String firstPhysId = physIds.get(0);
+			String lastPhysId = physIds.get(physIds.size()-1);
+			firstPage = xmlParser.getAttributeValue(document, "OAI-PMH/GetRecord/record/metadata/mets/structMap[@TYPE=\"PHYSICAL\"]//div[@ID='" + firstPhysId + "']", "ORDERLABEL");
+			lastPage = xmlParser.getAttributeValue(document, "OAI-PMH/GetRecord/record/metadata/mets/structMap[@TYPE=\"PHYSICAL\"]//div[@ID='" + lastPhysId + "']", "ORDERLABEL");
+			lstPageLabels.add(firstPage);
+			lstPageLabels.add(lastPage);	
+		}
+		return lstPageLabels;
+	}
+	
+	
+	
+	
 	
 	/**
 	 * Gets a List<String> which contains the 8-digit image numbers that orders a structure element. You could use these numbers to get the image files for a structure element.
