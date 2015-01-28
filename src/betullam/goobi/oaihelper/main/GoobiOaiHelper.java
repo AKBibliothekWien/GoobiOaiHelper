@@ -48,7 +48,7 @@ public class GoobiOaiHelper extends XmlParser {
 	}
 
 	/**
-	 * Get all relevent identifiers of the METS-XML document for further usage. Returns a List<Id>.
+	 * Get all relevent identifiers (LogId, DmdlogId, PhysIds) of the METS-XML document for further usage. Returns a List<Id>.
 	 * 
 	 * @param document				a Document object (METS-XML)
 	 * @param structureElements		a List<String> of stucture elements to parse, e. g. "Article", "Chapter", etc. Use "null" to parse all structure elements
@@ -103,7 +103,7 @@ public class GoobiOaiHelper extends XmlParser {
 		return physIds;
 	}
 
-	
+
 	/**
 	 * Gets a String with the page label for a structure element. E. g. if the first page of a structure element named "Article" starts at page no. 23 and ends at page no. 42, the
 	 * returned String would be "23-42". If the "Article" would be only on page no. 23, the returned String would be "23".
@@ -131,8 +131,8 @@ public class GoobiOaiHelper extends XmlParser {
 		}
 		return pageLabel;
 	}
-	
-	
+
+
 	/**
 	 * Gets a List<String> with separated fist page label and last page label for a structure element. E. g. if the first page of a structure element named "Article" starts at page no. 23 and ends at page no. 42, the
 	 * returned List<String> would be List<23,42>. If the "Article" would be only on page no. 23, the returned List<String> would be List<23,23>.
@@ -157,21 +157,21 @@ public class GoobiOaiHelper extends XmlParser {
 		}
 		return lstPageLabels;
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	/**
 	 * Gets a List<String> which contains the 8-digit image numbers that orders a structure element. You could use these numbers to get the image files for a structure element.
 	 * @param document						a Document object (METS-XML)
 	 * @param physIds						a List<String> with the identifiers of the physical structure map (see element <mets:structMap TYPE="PHYSICAL">) of the METS-XML
-	 * @return								a List<String> conaining the 8-digit image numbers that orders a structure element
+	 * @return								a List<String> containing the 8-digit image numbers that orders a structure element
 	 * @throws XPathExpressionException
 	 */
 	public List<String> getOrderNoByPhysId(Document document, List<String> physIds) throws XPathExpressionException {
 		List<String> images = new ArrayList<String>();
-		
+
 		for (String physId : physIds) {
 			String imageNo = xmlParser.getAttributeValue(document, "OAI-PMH/GetRecord/record/metadata/mets/structMap[@TYPE=\"PHYSICAL\"]//div[@ID='" + physId + "']", "ORDER");
 
@@ -180,13 +180,61 @@ public class GoobiOaiHelper extends XmlParser {
 
 			images.add(imageNo);
 		}
-		
+
 		return images;
 	}
 
-	
-	
-	
+	/**
+	 * Gets a List<String> of all URNs of the given PhysIDs.
+	 * 
+	 * @param document						a Document object (METS-XML)
+	 * @param physIds						a List<String> with the identifiers of the physical structure map (see element <mets:structMap TYPE="PHYSICAL">) of the METS-XML
+	 * @return								a List<String> containing the URNs for the given PhysIDs
+	 * @throws XPathExpressionException
+	 */
+	public List<String> getUrnsByPhysIds(Document document, List<String> physIds) throws XPathExpressionException {
+		List<String> urns = new ArrayList<String>();
+		for (String physId : physIds) {
+			String urn = xmlParser.getAttributeValue(document, "OAI-PMH/GetRecord/record/metadata/mets/structMap[@TYPE=\"PHYSICAL\"]//div[@ID='" + physId + "']", "CONTENTIDS");
+			urns.add(urn);
+		}
+
+		return urns;
+	}
+
+	/**
+	 * Gets a List<String> of author names for a given DmdLogId (= ID of a structure element). The names will be in the format "FirstName LastName".
+	 * 
+	 * @param document	a Document object (METS-XML)
+	 * @param dmdlogId	a String containing a DmdLogId
+	 * @return			a List<String> containing author names or null if no names were found
+	 */
+	public List<String> getAuthorsByDmdlogId(Document document, String dmdlogId) {
+		List<String> authorNames = new ArrayList<String>();
+
+		String xPathName				= "/OAI-PMH/GetRecord/record/metadata/mets/dmdSec[@ID='" + dmdlogId + "']/mdWrap/xmlData/mods/name[@type='personal']";
+		String xpathAuthorGivenName		= "/OAI-PMH/GetRecord/record/metadata/mets/dmdSec[@ID='" + dmdlogId + "']/mdWrap/xmlData/mods/name/namePart[@type='given']";
+		String xpathAuthorFamilyName	= "/OAI-PMH/GetRecord/record/metadata/mets/dmdSec[@ID='" + dmdlogId + "']/mdWrap/xmlData/mods/name/namePart[@type='family']";
+
+		try {
+			XPath xPath =  XPathFactory.newInstance().newXPath();
+			NodeList nameNodes = (NodeList)xPath.compile(xPathName).evaluate(document, XPathConstants.NODESET);
+
+			for (int i = 0; i < nameNodes.getLength(); i++) {
+				NodeList givenNameNode = (NodeList)xPath.compile(xpathAuthorGivenName).evaluate(document, XPathConstants.NODESET);
+				NodeList familyNameNode = (NodeList)xPath.compile(xpathAuthorFamilyName).evaluate(document, XPathConstants.NODESET);
+				String givenName = givenNameNode.item(i).getFirstChild().getNodeValue();
+				String familyName = familyNameNode.item(i).getFirstChild().getNodeValue();
+				authorNames.add(givenName + " " + familyName);
+			}
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		}
+
+		authorNames = (authorNames.isEmpty() == false) ? authorNames : null;
+		return authorNames;
+	}
+
 	/**
 	 * Gets the URL to the OAI-PMH interface as a String.
 	 * 
