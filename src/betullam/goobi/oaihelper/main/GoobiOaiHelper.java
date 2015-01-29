@@ -160,9 +160,6 @@ public class GoobiOaiHelper extends XmlParser {
 	}
 
 
-
-
-
 	/**
 	 * Gets a List<String> which contains the 8-digit image numbers that orders a structure element. You could use these numbers to get the image files for a structure element.
 	 * @param document						a Document object (METS-XML)

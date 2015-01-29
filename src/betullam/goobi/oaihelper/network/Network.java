@@ -36,6 +36,7 @@ import org.xml.sax.SAXException;
  */
 public class Network {
 
+	
 	/**
 	 * Gets a METS-XML Document from an OAI-PMH interface. It uses the "GetRecord" command of OAI (further information: http://www.openarchives.org/OAI/openarchivesprotocol.html#GetRecord).
 	 *  
