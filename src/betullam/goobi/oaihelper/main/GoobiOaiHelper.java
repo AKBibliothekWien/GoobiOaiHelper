@@ -32,7 +32,6 @@ import org.w3c.dom.NodeList;
 import betullam.goobi.oaihelper.classes.Id;
 import betullam.goobi.oaihelper.parsers.XmlParser;
 
-
 /**
  * This class provides methods to receive some information from an OAI-PMH interface. Provide a URL to such an interface with an ending slash. Example: "http://example.com/viewer/oai/"
  * 
@@ -43,6 +42,8 @@ public class GoobiOaiHelper extends XmlParser {
 	private String oaiPmh;
 	private XmlParser xmlParser = new XmlParser();
 
+	public GoobiOaiHelper() {}
+	
 	public GoobiOaiHelper(String oaiPmh) {
 		this.oaiPmh = oaiPmh;
 	}
@@ -60,7 +61,7 @@ public class GoobiOaiHelper extends XmlParser {
 		List<Id> ids = new ArrayList<Id>();
 		List<String> phsyIds = new ArrayList<String>();
 		XPath xPath = XPathFactory.newInstance().newXPath();
-		XPathExpression xPathExpression = xPath.compile("OAI-PMH/GetRecord/record/metadata/mets/structMap[@TYPE=\"LOGICAL\"]//div");
+		XPathExpression xPathExpression = xPath.compile("//mets/structMap[@TYPE=\"LOGICAL\"]//div");
 		NodeList nodeList = (NodeList)xPathExpression.evaluate(document, XPathConstants.NODESET);
 
 		// Check if node list is empty to prevent NullPointerException. If it is empty, just return null
@@ -99,7 +100,7 @@ public class GoobiOaiHelper extends XmlParser {
 	 */
 	public List<String> getPhysIds(Document document, String logId) throws Exception {	
 		List<String> physIds = new ArrayList<String>();
-		physIds = xmlParser.getAttributeValues(document, "OAI-PMH/GetRecord/record/metadata/mets/structLink//smLink[@from='" + logId + "']", "xlink:to");
+		physIds = xmlParser.getAttributeValues(document, "//mets/structLink//smLink[@from='" + logId + "']", "xlink:to");
 		return physIds;
 	}
 
@@ -120,8 +121,8 @@ public class GoobiOaiHelper extends XmlParser {
 		if (physIds != null) {
 			String firstPhysId = physIds.get(0);
 			String lastPhysId = physIds.get(physIds.size()-1);
-			String firstPage = xmlParser.getAttributeValue(document, "OAI-PMH/GetRecord/record/metadata/mets/structMap[@TYPE=\"PHYSICAL\"]//div[@ID='" + firstPhysId + "']", "ORDERLABEL");
-			String lastPage = xmlParser.getAttributeValue(document, "OAI-PMH/GetRecord/record/metadata/mets/structMap[@TYPE=\"PHYSICAL\"]//div[@ID='" + lastPhysId + "']", "ORDERLABEL");
+			String firstPage = xmlParser.getAttributeValue(document, "//mets/structMap[@TYPE=\"PHYSICAL\"]//div[@ID='" + firstPhysId + "']", "ORDERLABEL");
+			String lastPage = xmlParser.getAttributeValue(document, "//mets/structMap[@TYPE=\"PHYSICAL\"]//div[@ID='" + lastPhysId + "']", "ORDERLABEL");
 
 			if (firstPage.equals(lastPage)) {
 				pageLabel = firstPage.trim();
@@ -150,8 +151,8 @@ public class GoobiOaiHelper extends XmlParser {
 		if (physIds != null) {
 			String firstPhysId = physIds.get(0);
 			String lastPhysId = physIds.get(physIds.size()-1);
-			firstPage = xmlParser.getAttributeValue(document, "OAI-PMH/GetRecord/record/metadata/mets/structMap[@TYPE=\"PHYSICAL\"]//div[@ID='" + firstPhysId + "']", "ORDERLABEL");
-			lastPage = xmlParser.getAttributeValue(document, "OAI-PMH/GetRecord/record/metadata/mets/structMap[@TYPE=\"PHYSICAL\"]//div[@ID='" + lastPhysId + "']", "ORDERLABEL");
+			firstPage = xmlParser.getAttributeValue(document, "//mets/structMap[@TYPE=\"PHYSICAL\"]//div[@ID='" + firstPhysId + "']", "ORDERLABEL");
+			lastPage = xmlParser.getAttributeValue(document, "//mets/structMap[@TYPE=\"PHYSICAL\"]//div[@ID='" + lastPhysId + "']", "ORDERLABEL");
 			lstPageLabels.add(firstPage);
 			lstPageLabels.add(lastPage);	
 		}
@@ -173,7 +174,7 @@ public class GoobiOaiHelper extends XmlParser {
 		List<String> images = new ArrayList<String>();
 
 		for (String physId : physIds) {
-			String imageNo = xmlParser.getAttributeValue(document, "OAI-PMH/GetRecord/record/metadata/mets/structMap[@TYPE=\"PHYSICAL\"]//div[@ID='" + physId + "']", "ORDER");
+			String imageNo = xmlParser.getAttributeValue(document, "//mets/structMap[@TYPE=\"PHYSICAL\"]//div[@ID='" + physId + "']", "ORDER");
 
 			int intImageNo = Integer.parseInt(imageNo); // Convert to int to be able to add leading zeros and make it 8 digits long
 			imageNo = String.format("%08d", intImageNo); // Image-number-string with leading zeros by using String.format
@@ -195,7 +196,7 @@ public class GoobiOaiHelper extends XmlParser {
 	public List<String> getUrnsByPhysIds(Document document, List<String> physIds) throws XPathExpressionException {
 		List<String> urns = new ArrayList<String>();
 		for (String physId : physIds) {
-			String urn = xmlParser.getAttributeValue(document, "OAI-PMH/GetRecord/record/metadata/mets/structMap[@TYPE=\"PHYSICAL\"]//div[@ID='" + physId + "']", "CONTENTIDS");
+			String urn = xmlParser.getAttributeValue(document, "//mets/structMap[@TYPE=\"PHYSICAL\"]//div[@ID='" + physId + "']", "CONTENTIDS");
 			urns.add(urn);
 		}
 
@@ -212,9 +213,9 @@ public class GoobiOaiHelper extends XmlParser {
 	public List<String> getAuthorsByDmdlogId(Document document, String dmdlogId) {
 		List<String> authorNames = new ArrayList<String>();
 
-		String xPathName				= "/OAI-PMH/GetRecord/record/metadata/mets/dmdSec[@ID='" + dmdlogId + "']/mdWrap/xmlData/mods/name[@type='personal']";
-		String xpathAuthorGivenName		= "/OAI-PMH/GetRecord/record/metadata/mets/dmdSec[@ID='" + dmdlogId + "']/mdWrap/xmlData/mods/name/namePart[@type='given']";
-		String xpathAuthorFamilyName	= "/OAI-PMH/GetRecord/record/metadata/mets/dmdSec[@ID='" + dmdlogId + "']/mdWrap/xmlData/mods/name/namePart[@type='family']";
+		String xPathName				= "//mets/dmdSec[@ID='" + dmdlogId + "']/mdWrap/xmlData/mods/name[@type='personal']";
+		String xpathAuthorGivenName		= "//mets/dmdSec[@ID='" + dmdlogId + "']/mdWrap/xmlData/mods/name/namePart[@type='given']";
+		String xpathAuthorFamilyName	= "//mets/dmdSec[@ID='" + dmdlogId + "']/mdWrap/xmlData/mods/name/namePart[@type='family']";
 
 		try {
 			XPath xPath =  XPathFactory.newInstance().newXPath();

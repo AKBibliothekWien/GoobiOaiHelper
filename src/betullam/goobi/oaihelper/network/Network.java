@@ -55,13 +55,6 @@ public class Network {
 		DocumentBuilder db = dbf.newDocumentBuilder();
 		Document document = db.parse(conn.getInputStream());
 		
-		/*
-		// Output XML to console:
-		TransformerFactory tf = TransformerFactory.newInstance();
-		Transformer xform = tf.newTransformer();
-		xform.transform(new DOMSource(document), new StreamResult(System.out));
-		*/
-		
 		return document;
 	}
 }
