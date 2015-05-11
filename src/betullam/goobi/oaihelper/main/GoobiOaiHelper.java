@@ -30,7 +30,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import betullam.goobi.oaihelper.classes.Id;
-import betullam.goobi.oaihelper.parsers.XmlParser;
+import betullam.xmlhelper.XmlParser;
+
 
 /**
  * This class provides methods to receive some information from an OAI-PMH interface. Provide a URL to such an interface with an ending slash. Example: "http://example.com/viewer/oai/"
@@ -57,13 +58,13 @@ public class GoobiOaiHelper extends XmlParser {
 	 * @throws Exception
 	 */
 	public List<Id> getIds(Document document, List<String> structureElements) throws Exception {
-
+		
 		List<Id> ids = new ArrayList<Id>();
 		List<String> phsyIds = new ArrayList<String>();
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		XPathExpression xPathExpression = xPath.compile("//mets/structMap[@TYPE=\"LOGICAL\"]//div");
 		NodeList nodeList = (NodeList)xPathExpression.evaluate(document, XPathConstants.NODESET);
-
+		
 		// Check if node list is empty to prevent NullPointerException. If it is empty, just return null
 		if (nodeList.getLength() > 0) {
 			for (int i = 0; i < nodeList.getLength(); i++) {
