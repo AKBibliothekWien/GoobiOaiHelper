@@ -30,7 +30,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import ak.goobi.oaihelper.classes.Id;
-import betullam.xmlhelper.XmlParser;
+import ak.xmlhelper.XmlParser;
 
 
 /**
