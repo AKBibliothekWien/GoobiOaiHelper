@@ -14,7 +14,7 @@
  * along with GoobiOaiHelper.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package betullam.goobi.oaihelper.classes;
+package ak.goobi.oaihelper.classes;
 
 import java.util.List;
 

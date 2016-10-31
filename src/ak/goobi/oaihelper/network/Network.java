@@ -14,7 +14,7 @@
  * along with GoobiOaiHelper.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package betullam.goobi.oaihelper.network;
+package ak.goobi.oaihelper.network;
 
 import java.io.IOException;
 import java.net.URL;

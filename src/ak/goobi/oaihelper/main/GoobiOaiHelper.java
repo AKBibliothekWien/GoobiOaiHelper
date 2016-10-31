@@ -14,7 +14,7 @@
  * along with GoobiOaiHelper.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package betullam.goobi.oaihelper.main;
+package ak.goobi.oaihelper.main;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import betullam.goobi.oaihelper.classes.Id;
+import ak.goobi.oaihelper.classes.Id;
 import betullam.xmlhelper.XmlParser;
 
 

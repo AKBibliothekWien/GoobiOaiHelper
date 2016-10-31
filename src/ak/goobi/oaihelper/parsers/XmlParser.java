@@ -14,7 +14,7 @@
  * along with GoobiOaiHelper.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package betullam.goobi.oaihelper.parsers;
+package ak.goobi.oaihelper.parsers;
 
 import java.util.ArrayList;
 import java.util.List;
